@@ -3,7 +3,8 @@ import { NotificationContainer } from 'react-notifications';
 import {  Field, reduxForm, FieldArray, Fields } from 'redux-form';
 import { FormControl, Radio, Button } from 'react-bootstrap';
 import InputMask from 'react-input-mask';
-import FormSelect from './Select';
+import FormSelect from './select/Select';
+import options from './select/options';
 
 
 
@@ -73,17 +74,43 @@ const renderInputWithMask = ({ input, label, type, placeholder, id, meta: { touc
   </div>
 )
 
-const renderContacts = (fields) => (
-  <div className="contain">
-    <label className="label-style" htmlFor="contacts">Contacts</label>
-    <div className="select-contact">
-      <FormSelect {...fields.selectedOption.input} placeholder="Select" id="contacts"/>
-    </div>
-    <div className="input-contact">
-      <FormControl {...fields.contactvalue.input} placeholder="Enter your contacts" type="text" componentClass='input' />
-    </div>
-  </div>
-)
+const renderContacts = ({ fields, meta: { touched, error, submitFailed }}) => {
+  if(!fields.length) {
+    fields.push({})
+  }
+  return (
+    fields.map((contacts, index) => {
+      return (
+        <div className="contacts-row" key={index}>
+          {
+            (fields.length > 1) &&
+            (<div>
+              <button className="contact-remove" onClick={() => fields.remove(index)}></button>
+            </div>)
+          }
+          <div className="contact-select">
+            <Field 
+              name="contact-select" 
+              component={renderMultiSelect} 
+              placeholder="contacts" 
+              options={options.contacts}
+              label="Contacts"
+            />
+          </div>
+          <div className="contact-input">
+            <Field 
+              name="contact-input" 
+              component={renderInput} 
+              type="text" 
+              placeholder="Add your contacts" 
+              label="Contacts"
+            />
+          </div>         
+        </div>
+      )
+    })
+  )
+}
 
 const renderMultiSelect = ({ input, label, type, placeholder, id, options, meta: { touched, error} }) => (
   <div className="contain">
@@ -175,7 +202,7 @@ class FormPage extends Component {
             />
           </div>
           <div className="contacts_contain ">
-            <Fields names={[ 'selectedOption', 'contactvalue' ]} component={renderContacts}/>
+            <Fields names={[ 'selectedOption', 'contactvalue' ]} component={renderContacts} options={options.contacts}/>
           </div>
           <div className="file_contain ">
             <Field 
@@ -189,7 +216,8 @@ class FormPage extends Component {
           <div className="hobbies_contain ">
             <Field 
               name="hobbies" 
-              component={renderMultiSelect} 
+              component={renderMultiSelect}
+              options={options.hobbies} 
               placeholder='Choose your hobbies' 
               label="Hobbies"
               id="hobbies" 
