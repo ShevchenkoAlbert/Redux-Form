@@ -28,15 +28,47 @@ body {
   width: 80%;
 
 }
-
+.label-contacts {
+  width: 20%;
+}
+.label-contact-style{
+  text-align: center;
+  padding: 0 15px;
+  width: 100%;
+}
+.contain-contact {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+}
+.contact_row {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  margin-bottom: 15px;
+}
 .select-contact {
   width: 30%;
   margin-right: 15px;
 }
 
 .input-contact {
-  width: 50%;
+  width: 70%;
+  display: flex;
+  flex-flow: row nowrap;
 }
+.contact_input_contain {
+  width: 100%;
+  margin-right: 5px;
+}
+.add {
+  cursor: pointer;
+  text-decoration: none;
+}
+.add:hover {
+  text-decoration: none;
+}
+
 .checkbox-contain {
   margin-left: 20%;
   margin-bottom: 15px;

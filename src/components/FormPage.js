@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { NotificationContainer } from 'react-notifications';
 import {  Field, reduxForm, FieldArray, Fields } from 'redux-form';
-import { FormControl, Radio, Button } from 'react-bootstrap';
+import { FormControl, Radio, Button, Glyphicon } from 'react-bootstrap';
 import InputMask from 'react-input-mask';
 import FormSelect from './select/Select';
 import options from './select/options';
@@ -59,6 +59,19 @@ const renderInputFile = ({ input, label, type, placeholder, id, meta: { touched,
     </div>
   </div>
 )
+const renderContactSelect = ({ input, placeholder, id, type, options, meta: { touched, error} }) => (
+  <div>
+    <FormSelect input={input} type={type} options={options} placeholder={placeholder} id={id} />
+    {touched && (error && <span  className="error">{error}</span>)}
+  </div>
+)
+
+const renderContactInput = ({ input, label, type, placeholder, id, meta: { touched, error} }) => (
+  <div className="contact_input_contain">
+      <FormControl {...input} placeholder={placeholder} type={type} componentClass='input' id={id} />
+      {touched && (error && <span  className="error">{error}</span>)}
+  </div>
+)
 const renderInputWithMask = ({ input, label, type, placeholder, id, meta: { touched, error} }) => (
   <div className="contain">
     <label className="label-style" htmlFor={id}>{label}</label>
@@ -74,41 +87,59 @@ const renderInputWithMask = ({ input, label, type, placeholder, id, meta: { touc
   </div>
 )
 
-const renderContacts = ({ fields, meta: { touched, error, submitFailed }}) => {
+const renderContacts = ({ fields, id, label, meta: { touched, error, submitFailed }}) => {
   if(!fields.length) {
     fields.push({})
   }
   return (
-    fields.map((contacts, index) => {
-      return (
-        <div className="contacts-row" key={index}>
-          {
-            (fields.length > 1) &&
-            (<div>
-              <button className="contact-remove" onClick={() => fields.remove(index)}></button>
-            </div>)
-          }
-          <div className="contact-select">
-            <Field 
-              name="contact-select" 
-              component={renderMultiSelect} 
-              placeholder="contacts" 
-              options={options.contacts}
-              label="Contacts"
-            />
-          </div>
-          <div className="contact-input">
-            <Field 
-              name="contact-input" 
-              component={renderInput} 
-              type="text" 
-              placeholder="Add your contacts" 
-              label="Contacts"
-            />
-          </div>         
-        </div>
-      )
-    })
+    <div className="contain">
+      <div className="label-contacts"> 
+        <label className="label-contact-style" htmlFor={id}>{label}</label>
+      </div>
+      <div className="contain-contact">
+        { fields.map((contacts, index) => {
+          return (
+          
+            <div className="contact_row">
+              <div className="select-contact">
+                <Field 
+                  name={`${contacts}.select`} 
+                  component={renderContactSelect} 
+                  placeholder="contacts" 
+                  options={options.contacts}
+                />
+                {
+                  fields.length - 1 === index &&
+                    (<a className="add" onClick={() => fields.push({})}>+ add more contacts </a>)
+                }
+              </div>
+              <div className="input-contact">
+                <Field 
+                  name={`${contacts}.input`} 
+                  component={renderContactInput} 
+                  type="text" 
+                  placeholder="Add your contacts" 
+                  id={id}
+                />
+                {
+                (fields.length > 1) &&
+                (<div>
+                  <Button 
+                    bsStyle="danger" 
+                    bsSize="small" 
+                    onClick={() => fields.remove(index)}
+                  >
+                    <Glyphicon glyph="remove" />
+                  </Button>
+                </div>)
+              }
+              </div>  
+            </div>
+        )
+      })
+    }
+    </div>       
+    </div>
   )
 }
 
@@ -202,7 +233,7 @@ class FormPage extends Component {
             />
           </div>
           <div className="contacts_contain ">
-            <Fields names={[ 'selectedOption', 'contactvalue' ]} component={renderContacts} options={options.contacts}/>
+            <FieldArray name="contacts" component={renderContacts} id="contacts" label="Contacts"/>
           </div>
           <div className="file_contain ">
             <Field 
